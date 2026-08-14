@@ -34,7 +34,7 @@ Obrigado por ser você. 💖`,
   // Capítulo 4 — Vídeos do YouTube (cole o ID do vídeo aqui)
   // Como achar o ID: na URL https://youtu.be/XXXX ou /watch?v=XXXX
   // Exemplo: "dQw4w9WgXcQ"
-  videos: [],
+  videos: ["9QWa5QMWPJo"],
 
   // Capítulo Final — Contrato
   contratoTexto: `Eu, {RECIPIENTE}, livre e espontaneamente, aceito assinar este

@@ -3,30 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Surpresa 3D – Pedido de Namoro</title>
+  <title>Para Você 💖 — Uma Surpresa Especial</title>
+  <meta name="description" content="Uma surpresa pensada para você — carta, momentos, datas e um pedido especial." />
+
+  <!-- Fontes premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <!-- Three.js para fundo 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" integrity="sha512-bVV/Tn4mePKj6uEBXKQHGTzofEBTUs4GXrdib9K6cG7qT2joYQWlUZTHz7CNUVJsJKdY8yECLOo3cM0kWX99XQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <link rel="stylesheet" href="style.css" />
-  <!-- Three.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" integrity="sha512-6HvE93jIsGyTekUmqPVcJJRNxP2xSgKcEhHRRcamFIgRkPLQ/D62n4j6qp5ghvTsYC6pjsfNmzHFeYENnU9VAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-  <div class="overlay">
-    <h1>Meu Amor,</h1>
-    <p>Quero fazer este pedido de forma especial, em 3D.</p>
-    <button id="open-contract">Abrir Contrato</button>
-  </div>
+  <!-- Fundo 3D (corações/flores flutuantes) -->
   <canvas id="three-canvas"></canvas>
 
-  <div id="contract-modal" class="modal hidden">
-    <div class="modal-content">
-      <span class="close" id="close-contract">&times;</span>
-      <h2>Contrato de Amor</h2>
-      <p>Eu, <span class="underline">[seu nome]</span>, aceito ser seu namorado oficial.</p>
-      <p>Assine abaixo:</p>
-      <canvas id="signature" width="300" height="100" style="border:1px solid #ccc;"></canvas>
-      <button id="clear-signature">Limpar</button>
-    </div>
-  </div>
+  <!-- Decoração flutuante (pétalas de coração em CSS) -->
+  <div id="decor" aria-hidden="true"></div>
 
+  <!-- ===== Abertura ===== -->
+  <section id="chapter-welcome" class="chapter active">
+    <div class="glass card-center">
+      <h1 class="title">Para Você</h1>
+      <p class="subtitle">Eu preparei algo especial. Toque e descubra.</p>
+      <button id="btn-start" class="btn-primary">Abrir a Surpresa ✨</button>
+    </div>
+  </section>
+
+  <!-- ===== Carta ===== -->
+  <section id="chapter-letter" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo 1 · Uma Carta</p>
+      <h2 class="title small">Minha carta para você</h2>
+      <div class="letter-body" id="letter-body">
+        <p id="letter-text">
+          <strong>Meu amor,</strong><br><br>
+          Desde o momento em que você chegou na minha vida, tudo ganhou mais cor, mais brilho e mais sentido.
+          Cada risada sua, cada mensagem, cada instante ao seu lado é um presente que eu guardo no coração.<br><br>
+          Esta página é um pedacinho de tudo o que você significa para mim. Que ela te faça sorrir, do mesmo jeito que você me faz sorrir todos os dias.<br><br>
+          <em>Obrigado por ser você.</em> 💖
+        </p>
+      </div>
+      <div class="divider"><span>Agora</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Datas Especiais ===== -->
+  <section id="chapter-dates" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo 2 · Datas Especiais</p>
+      <h2 class="title small">Nossos momentos no calendário</h2>
+      <p class="hint">Adicione aqui os dias que marcaram a nossa história.</p>
+      <!-- As datas são adicionadas via JS a partir da lista EM data.js -->
+      <ul id="dates-list" class="dates-list"></ul>
+    </div>
+  </section>
+
+  <!-- ===== Fotos ===== -->
+  <section id="chapter-photos" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo 3 · Nossas Memórias</p>
+      <h2 class="title small">Momentos que eu quero lembrar para sempre</h2>
+      <p class="hint">Coloque suas fotos na pasta <code>photos/</code> e elas aparecem aqui.</p>
+      <div id="photos-grid" class="photos-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Vídeo ===== -->
+  <section id="chapter-video" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo 4 · Para Você Ouvir e Ver</p>
+      <h2 class="title small">Uma playlist do nosso amor</h2>
+      <p class="hint">Adicione seus vídeos (áudio/clipe) aqui — basta colar os links na seção de configurações.</p>
+      <div id="video-embed" class="video-embed">
+        <p class="placeholder">🎬 Seus vídeos aparecerão aqui</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pedido / Contrato ===== -->
+  <section id="chapter-contract" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo Final · O Pedido</p>
+      <h2 id="contract-title" class="title small">Um Contrato de Amor</h2>
+      <p class="contract-text" id="contract-text">
+        Eu, <span class="sig-line">Nome da Pessoa</span>, livre e espontaneamente, aceito assinar este
+        contrato eterno de amor e cumplicidade com
+        <span class="sig-line">Seu Nome</span>.<br><br>
+        Prometo rir com você, cuidar de você, e caminhar ao seu lado em todos os capítulos da nossa história.
+      </p>
+      <p class="iam"><strong>Conclusão:</strong> Aceito ser o namorado oficial. 💍</p>
+
+      <div class="sign-box">
+        <p class="hint">Assine aqui embaixo com o dedo ou mouse:</p>
+        <canvas id="signature" width="340" height="130"></canvas>
+        <div class="sign-actions">
+          <button id="clear-signature" class="btn-ghost">Limpar</button>
+          <button id="btn-confirm" class="btn-primary">Eu Aceito 💖</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Navegação ===== -->
+  <nav id="chapter-nav" class="chapter-nav hidden">
+    <button class="nav-btn active" data-target="chapter-welcome">💌</button>
+    <button class="nav-btn" data-target="chapter-letter">✉️</button>
+    <button class="nav-btn" data-target="chapter-dates">📅</button>
+    <button class="nav-btn" data-target="chapter-photos">📷</button>
+    <button class="nav-btn" data-target="chapter-video">🎬</button>
+    <button class="nav-btn" data-target="chapter-contract">💍</button>
+  </nav>
+
+  <div id="message-toast" class="toast hidden">💖 Obrigado por aceitar!</div>
+
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

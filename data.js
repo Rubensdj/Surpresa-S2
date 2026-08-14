@@ -5,8 +5,12 @@
    ===================================================================== */
 
 const SURPRISE_DATA = {
-  // Nome de quem recebe (e de quem envia)
-  nomeRecipiente: "Nome da Pessoa",      // ↓ Nome dela, ex: "Maria"
+  // Nomes
+  nomeRecipiente: "Nome da Pessoa",      // Nome dela
+  nomeRemetente: "Seu Nome",              // Seu nome
+
+  // Data de início do relacionamento (para o contador de dias)
+  dataInicio: "2024-01-01",               // Formato: AAAA-MM-DD
 
   // Capítulo 1 — Carta
   carta: `Desde o momento em que você chegou na minha vida, tudo ganhou mais cor,

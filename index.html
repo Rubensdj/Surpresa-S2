@@ -9,7 +9,7 @@
   <!-- Fontes premium -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet" />
 
   <!-- Three.js para fundo 3D -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -26,9 +26,16 @@
   <!-- Decoração flutuante (pétalas de coração em CSS) -->
   <div id="decor" aria-hidden="true"></div>
 
+  <!-- Confete container -->
+  <div id="confetti" aria-hidden="true"></div>
+
+  <!-- Musica toggle -->
+  <button id="music-toggle" class="music-toggle" title="Ligar/desligar música">🎵</button>
+
   <!-- ===== Abertura ===== -->
   <section id="chapter-welcome" class="chapter active">
     <div class="glass card-center">
+      <div class="heart-orbit">💖</div>
       <h1 class="title">Para Você</h1>
       <p class="subtitle">Eu preparei algo especial. Toque e descubra.</p>
       <button id="btn-start" class="btn-primary">Abrir a Surpresa ✨</button>
@@ -41,13 +48,7 @@
       <p class="eyebrow">Capítulo 1 · Uma Carta</p>
       <h2 class="title small">Minha carta para você</h2>
       <div class="letter-body" id="letter-body">
-        <p id="letter-text">
-          <strong>Meu amor,</strong><br><br>
-          Desde o momento em que você chegou na minha vida, tudo ganhou mais cor, mais brilho e mais sentido.
-          Cada risada sua, cada mensagem, cada instante ao seu lado é um presente que eu guardo no coração.<br><br>
-          Esta página é um pedacinho de tudo o que você significa para mim. Que ela te faça sorrir, do mesmo jeito que você me faz sorrir todos os dias.<br><br>
-          <em>Obrigado por ser você.</em> 💖
-        </p>
+        <p id="letter-text"></p>
       </div>
       <div class="divider"><span>Agora</span></div>
     </div>
@@ -58,8 +59,11 @@
     <div class="glass card">
       <p class="eyebrow">Capítulo 2 · Datas Especiais</p>
       <h2 class="title small">Nossos momentos no calendário</h2>
-      <p class="hint">Adicione aqui os dias que marcaram a nossa história.</p>
-      <!-- As datas são adicionadas via JS a partir da lista EM data.js -->
+      <div id="timer-counter" class="timer-counter">
+        <span class="timer-label">Estamos juntos há</span>
+        <span id="timer-days" class="timer-number">0</span>
+        <span class="timer-unit">dias</span>
+      </div>
       <ul id="dates-list" class="dates-list"></ul>
     </div>
   </section>
@@ -79,7 +83,6 @@
     <div class="glass card">
       <p class="eyebrow">Capítulo 4 · Para Você Ouvir e Ver</p>
       <h2 class="title small">Uma playlist do nosso amor</h2>
-      <p class="hint">Adicione seus vídeos (áudio/clipe) aqui — basta colar os links na seção de configurações.</p>
       <div id="video-embed" class="video-embed">
         <p class="placeholder">🎬 Seus vídeos aparecerão aqui</p>
       </div>
@@ -91,12 +94,7 @@
     <div class="glass card">
       <p class="eyebrow">Capítulo Final · O Pedido</p>
       <h2 id="contract-title" class="title small">Um Contrato de Amor</h2>
-      <p class="contract-text" id="contract-text">
-        Eu, <span class="sig-line">Nome da Pessoa</span>, livre e espontaneamente, aceito assinar este
-        contrato eterno de amor e cumplicidade com
-        <span class="sig-line">Seu Nome</span>.<br><br>
-        Prometo rir com você, cuidar de você, e caminhar ao seu lado em todos os capítulos da nossa história.
-      </p>
+      <p class="contract-text" id="contract-text"></p>
       <p class="iam"><strong>Conclusão:</strong> Aceito ser o namorado oficial. 💍</p>
 
       <div class="sign-box">
@@ -110,6 +108,12 @@
       </div>
     </div>
   </section>
+
+  <!-- ===== Lightbox ===== -->
+  <div id="lightbox" class="lightbox hidden">
+    <span id="lightbox-close" class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="Foto ampliada" />
+  </div>
 
   <!-- ===== Navegação ===== -->
   <nav id="chapter-nav" class="chapter-nav hidden">

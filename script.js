@@ -201,6 +201,95 @@
     setTimeout(() => toast.classList.add('hidden'), 5000);
   });
 
+  /* ============ 10. GERAR COMPROVANTE PDF ============ */
+  document.getElementById('btn-download-pdf').addEventListener('click', () => {
+    if (!window.jspdf) { alert('Biblioteca PDF ainda carregando, tente novamente em instantes.'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageW = 210;
+    const margin = 20;
+    const contentW = pageW - margin * 2;
+    let y = 25;
+
+    // -- Cabeçalho com borda decorativa --
+    doc.setFillColor(236, 72, 153);
+    doc.roundedRect(margin, 15, contentW, 10, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.text('Contrato de Relacionamento Amoroso', pageW / 2, 22, { align: 'center' });
+
+    y = 40;
+    doc.setTextColor(40, 20, 60);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+
+    // -- Cláusulas do contrato --
+    const clausulas = [
+      { titulo: 'Cláusula 1 — Aceitação', texto: 'Eu, ' + (DATA.nomeRecipiente || 'a pessoa amada') + ', livre e espontaneamente, aceito este contrato eterno de amor e cumplicidade.' },
+      { titulo: 'Cláusula 2 — Compromissos', texto: 'Prometo rir com você, cuidar de você, caminhar ao seu lado em todos os capítulos da nossa história, e nunca desistir de nós.' },
+      { titulo: 'Cláusula 3 — Fidelidade', texto: 'Comprometo-me a ser fiel, honesto e transparente. Nosso amor se constrói com verdade e confiança.' },
+      { titulo: 'Cláusula 4 — Apoio Mútuo', texto: 'Nos dias bons e nos dias difíceis, serei seu apoio. Sua alegria é minha alegria; sua dor é minha dor.' },
+      { titulo: 'Cláusula 5 — Crescimento', texto: 'Cresceremos juntos. Nunca deixaremos de nos escolher. Este contrato não tem prazo de validade.' },
+      { titulo: 'Cláusula 6 — Vigência', texto: 'Este contrato entra em vigor no momento da assinatura e tem validade eterna.' },
+    ];
+
+    clausulas.forEach((c) => {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      if (y > 230) { doc.addPage(); y = 25; }
+      doc.text(c.titulo, margin, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const linhas = doc.splitTextToSize(c.texto, contentW);
+      doc.text(linhas, margin, y);
+      y += linhas.length * 5 + 4;
+    });
+
+    // -- Linha de assinatura --
+    if (y > 250) { doc.addPage(); y = 25; }
+    y += 10;
+    doc.setDrawColor(236, 72, 153);
+    doc.setLineWidth(0.5);
+    doc.line(margin + 10, y, margin + 90, y);
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Assinatura Digital', margin + 35, y + 5);
+
+    // -- Inserir imagem da assinatura do canvas --
+    const sigCanvas = document.getElementById('signature');
+    const sigImg = sigCanvas.toDataURL('image/png');
+    try {
+      doc.addImage(sigImg, 'PNG', margin + 10, y - 28, 80, 28);
+    } catch (e) {
+      doc.text('[Assinatura em branco]', margin + 10, y - 5);
+    }
+
+    // -- Comprovante / rodapé --
+    if (y > 270) { doc.addPage(); y = 25; } else { y += 20; }
+    doc.setFillColor(168, 85, 247);
+    doc.roundedRect(margin, y, contentW, 14, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    const dataHora = new Date().toLocaleString('pt-BR');
+    doc.text('COMPROVANTE DE ACEITAÇÃO', pageW / 2, y + 5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text('Assinado digitalmente em: ' + dataHora, pageW / 2, y + 10, { align: 'center' });
+
+    // -- Baixar --
+    const nomeArquivo = 'Contrato-de-Namoro-' + (DATA.nomeRecipiente || 'amor') + '.pdf';
+    doc.save(nomeArquivo);
+
+    // Toast
+    const toast = document.getElementById('message-toast');
+    toast.textContent = '📄 Comprovante PDF gerado com sucesso!';
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4000);
+  });
+
   /* ============ HELPERS ============ */
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({

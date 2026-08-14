@@ -1,0 +1,25 @@
+/* style.css */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background-color: #fff;
+  color: #262626;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.container {
+  max-width: 600px;
+  text-align: center;
+  padding: 1rem;
+}
+h1 { font-size: 2rem; margin-bottom: .5rem; }
+.placeholder {
+  background: #fafafa;
+  border: 2px dashed #dbdbdb;
+  padding: 2rem;
+  margin: 1rem 0;
+}
+#signature { background: #fafafa; }
+#clear { margin-top: .5rem; padding: .3rem .6rem; }

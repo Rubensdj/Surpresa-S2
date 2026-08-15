@@ -84,6 +84,24 @@ body {
   50%    { box-shadow: 0 0 0 10px rgba(236,72,153,0); }
 }
 
+/* ===== Barra de progresso ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 150;
+  background: rgba(255,255,255,0.08);
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ec4899, #a855f7, #67e8f9);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(236,72,153,0.6);
+}
+
 /* ===== Overlay de conteúdo ===== */
 .chapter {
   position: fixed;

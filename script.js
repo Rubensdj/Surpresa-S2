@@ -274,22 +274,68 @@
     document.getElementById('contract-text').textContent = txt;
   }
 
-  /* ============ 10. NAVEGAÇÃO ============ */
+  /* ============ 10. NAVEGAÇÃO + SWIPE + PROGRESSO ============ */
   const nav = document.getElementById('chapter-nav');
+  const progressBar = document.getElementById('progress-bar');
+  const progressFill = document.getElementById('progress-fill');
+  const chapters = ['chapter-welcome', 'chapter-letter', 'chapter-dates', 'chapter-photos', 'chapter-video', 'chapter-contract'];
+
+  function updateProgress(id) {
+    const idx = chapters.indexOf(id);
+    if (idx < 0) return;
+    const pct = ((idx + 1) / chapters.length) * 100;
+    progressFill.style.width = pct + '%';
+  }
+
   document.getElementById('btn-start').addEventListener('click', () => {
     go('chapter-letter');
     nav.classList.remove('hidden');
+    progressBar.classList.remove('hidden');
   });
   document.querySelectorAll('.nav-btn').forEach((btn) => {
     btn.addEventListener('click', () => go(btn.dataset.target));
   });
+
   function go(id) {
     document.querySelectorAll('.chapter').forEach((s) => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.target === id));
+    updateProgress(id);
   }
 
-  /* ============ 11. ASSINATURA ============ */
+  // Swipe para mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) < 60) return;
+    const current = document.querySelector('.chapter.active');
+    if (!current) return;
+    const idx = chapters.indexOf(current.id);
+    if (diff < 0 && idx < chapters.length - 1) go(chapters[idx + 1]);
+    if (diff > 0 && idx > 0) go(chapters[idx - 1]);
+  }, { passive: true });
+
+  // Navegação por teclado
+  document.addEventListener('keydown', (e) => {
+    const current = document.querySelector('.chapter.active');
+    if (!current) return;
+    const idx = chapters.indexOf(current.id);
+    if (e.key === 'ArrowRight' && idx < chapters.length - 1) go(chapters[idx + 1]);
+    if (e.key === 'ArrowLeft' && idx > 0) go(chapters[idx - 1]);
+  });
+
+  // Parallax do mouse no fundo 3D
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 0.5;
+    const y = (e.clientY / window.innerHeight - 0.5) * 0.5;
+    const canvas = document.getElementById('three-canvas');
+    if (canvas) canvas.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+  });
+
+  /* ============ 11. ASSINATURA + SOM ============ */
   const canvas = document.getElementById('signature');
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = '#1a0a2e';
@@ -297,9 +343,24 @@
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   let drawing = false;
+  let lastBeep = 0;
+
+  function playBeep() {
+    try {
+      const ac = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.frequency.value = 800 + Math.random() * 200;
+      gain.gain.value = 0.02;
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start();
+      osc.stop(ac.currentTime + 0.03);
+    } catch (e) {}
+  }
   function pos(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
   canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(pos(e).x, pos(e).y); });
-  canvas.addEventListener('mousemove', (e) => { if (!drawing) return; ctx.lineTo(pos(e).x, pos(e).y); ctx.stroke(); });
+  canvas.addEventListener('mousemove', (e) => { if (!drawing) return; ctx.lineTo(pos(e).x, pos(e).y); ctx.stroke(); const now = Date.now(); if (now - lastBeep > 80) { playBeep(); lastBeep = now; } });
   canvas.addEventListener('mouseup', () => (drawing = false));
   canvas.addEventListener('mouseleave', () => (drawing = false));
   canvas.addEventListener('touchstart', (e) => {
@@ -309,6 +370,7 @@
   canvas.addEventListener('touchmove', (e) => {
     if (!drawing) return; e.preventDefault(); const t = e.touches[0]; const r = canvas.getBoundingClientRect();
     ctx.lineTo(t.clientX - r.left, t.clientY - r.top); ctx.stroke();
+    const now = Date.now(); if (now - lastBeep > 80) { playBeep(); lastBeep = now; }
   }, { passive: false });
   canvas.addEventListener('touchend', () => (drawing = false));
 
@@ -316,6 +378,24 @@
 
   document.getElementById('btn-confirm').addEventListener('click', () => {
     launchConfetti();
+    // Som de confirmação (arpejo de 3 notas)
+    try {
+      const ac = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.value = 0.05;
+        osc.connect(gain);
+        gain.connect(ac.destination);
+        osc.start(ac.currentTime + i * 0.1);
+        osc.stop(ac.currentTime + i * 0.1 + 0.3);
+      });
+    } catch (e) {}
+    // Confete extra
+    setTimeout(launchConfetti, 500);
+    setTimeout(launchConfetti, 1000);
     const toast = document.getElementById('message-toast');
     toast.textContent = '💖 Você acabou de assinar o contrato mais lindo. Eu aceito, e prometo te amar para sempre!';
     toast.classList.remove('hidden');

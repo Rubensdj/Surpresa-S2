@@ -3,7 +3,7 @@
   'use strict';
   const DATA = window.SURPRISE_DATA || {};
   const TEMA = DATA.tema || {};
-  const chapters = ['chapter-envelope', 'chapter-letter', 'chapter-dates', 'chapter-photos', 'chapter-video', 'chapter-ar', 'chapter-contract'];
+  const chapters = ['chapter-envelope', 'chapter-letter', 'chapter-dates', 'chapter-photos', 'chapter-video', 'chapter-ar', 'chapter-map', 'chapter-contract'];
 
   /* ============ 0. LOADING SCREEN ============ */
   function hideLoading() {
@@ -268,7 +268,7 @@
   }
 
   function addBadge(idx) {
-    const labels = ['✉️ Envelope', '📝 Carta', '📅 História', '📷 Memórias', '🎬 Vídeo', '🔮 RA', '💍 Contrato'];
+    const labels = ['✉️ Envelope', '📝 Carta', '📅 História', '📷 Memórias', '🎬 Vídeo', '🔮 RA', '🗺️ Mapa', '💍 Contrato'];
     const b = document.createElement('span');
     b.className = 'badge'; b.textContent = labels[idx] || '✨';
     badgesEl.appendChild(b);
@@ -460,6 +460,113 @@
     toast('📄 Comprovante PDF gerado com sucesso!');
   });
 
+  /* ============ 21. MAPA EM TEMPO REAL (Leaflet + Geolocation) ============ */
+  let mapInstance = null;
+
+  function initMap() {
+    const btn = document.getElementById('btn-map-start');
+    const container = document.getElementById('map-container');
+    const info = document.getElementById('map-info');
+
+    btn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        toast('Geolocalização não suportada neste dispositivo 😔');
+        return;
+      }
+      if (!window.L) {
+        toast('Mapa ainda carregando, tente novamente...');
+        return;
+      }
+
+      // Coordenadas de Rubens (Recife-PE) -- configurável no data.js
+      const RubensLat = DATA.minhaLat || -8.0476;
+      const RubensLon = DATA.minhaLon || -34.8770;
+      const minhaLocal = DATA.minhaLocal || 'Recife-PE';
+
+      btn.style.display = 'none';
+      container.classList.remove('hidden');
+      container.style.height = '320px';
+
+      toast('Localizando você... 📍');
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const userLat = pos.coords.latitude;
+          const userLon = pos.coords.longitude;
+
+          // Criar mapa
+          mapInstance = L.map('map-container').setView([(userLat + RubensLat) / 2, (userLon + RubensLon) / 2], 5);
+
+          // Tile layer escuro premium
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap | © CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19,
+          }).addTo(mapInstance);
+
+          // Marcador dela (azul/cyan)
+          const elaIcon = L.divIcon({
+            html: '💖',
+            className: 'map-marker-ela',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+          });
+          L.marker([userLat, userLon], { icon: elaIcon })
+            .addTo(mapInstance)
+            .bindPopup('<b> Você está aqui 💕</b>');
+
+          // Marcador dele (dourado)
+          const euIcon = L.divIcon({
+            html: '👦',
+            className: 'map-marker-eu',
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+          });
+          L.marker([RubensLat, RubensLon], { icon: euIcon })
+            .addTo(mapInstance)
+            .bindPopup('<b> Eu estou aqui 📍 ' + minhaLocal + '</b>');
+
+          // Linha conectando os dois
+          L.polyline([[userLat, userLon], [RubensLat, RubensLon]], {
+            color: '#ec4899',
+            weight: 3,
+            opacity: 0.7,
+            dashArray: '10, 10',
+            lineCap: 'round',
+          }).addTo(mapInstance);
+
+          // Calcular distância (Haversine)
+          const R = 6371;
+          const dLat = (RubensLat - userLat) * Math.PI / 180;
+          const dLon = (RubensLon - userLon) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) ** 2 + Math.cos(userLat * Math.PI / 180) * Math.cos(RubensLat * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distKm = Math.round(R * c);
+
+          // Tempo estimado (avião ~850km/h, carro ~80km/h)
+          const horasAviao = (distKm / 850).toFixed(1);
+          const horasCarro = Math.round(distKm / 80);
+
+          document.getElementById('map-distance').textContent = '📏 ' + distKm.toLocaleString('pt-BR') + ' km entre nós';
+          document.getElementById('map-time').textContent = '✈️ ' + horasAviao + 'h de avião | 🚗 ' + horasCarro + 'h de carro';
+          info.classList.remove('hidden');
+
+          // Ajustar zoom para mostrar os dois pontos
+          mapInstance.fitBounds([[userLat, userLon], [RubensLat, RubensLon]], { padding: [40, 40] });
+
+          toast('Mapa ativado! A distância não importa quando o amor é verdadeiro 💖');
+        },
+        (err) => {
+          btn.style.display = 'inline-block';
+          container.classList.add('hidden');
+          toast('Não consegui acessar sua localização: ' + err.message + ' 😔');
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+      );
+    });
+  }
+  initMap();
+
   /* ============ HELPERS ============ */
   function esc(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#39;' }[c]));
@@ -574,7 +681,6 @@
     if (!window.lottie) return;
     const el = document.getElementById('lottie-heart');
     if (!el) return;
-    // JSON inline de coração batendo (simplificado)
     const heartData = {
       v: '5.7.4', fr: 30, w: 100, h: 100, ip: 0, op: 30, nm: 'Heart', layers: [{
         ty: 4, nm: 'Heart', sr: 1, ks: { o: { a: 0, k: 100 }, s: { a: 1, k: [
@@ -589,6 +695,55 @@
     catch (e) {}
   }
   initLottie();
+
+  /* ============ 22. TROCAR TEMA (claro/escuro) ============ */
+  let lightTheme = false;
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    lightTheme = !lightTheme;
+    document.body.classList.toggle('light-theme', lightTheme);
+    toast(lightTheme ? '🎨 Tema claro ativado!' : '🌙 Tema escuro ativado!');
+  });
+
+  /* ============ 23. COMPARTILHAR (Web Share API) ============ */
+  document.getElementById('share-btn')?.addEventListener('click', async () => {
+    const shareData = {
+      title: 'Para Você 💖',
+      text: 'Alguém muito especial preparou uma surpresa para você...',
+      url: 'https://rubensdj.github.io/Surpresa-S2/',
+    };
+    try {
+      if (navigator.share) { await navigator.share(shareData); }
+      else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast('📋 Link copiado! Compartilhe com quem você ama 💖');
+      }
+    } catch (e) {}
+  });
+
+  /* ============ 24. CHUVA DE PÉTALAS (toggle) ============ */
+  let petalRain = false, petalInterval = null;
+  document.getElementById('petal-toggle')?.addEventListener('click', () => {
+    petalRain = !petalRain;
+    const decor = document.getElementById('decor');
+    if (petalRain) {
+      decor.style.opacity = '1.5';
+      petalInterval = setInterval(() => {
+        const syms = ['💖', '🌸', '💕', '🌹', '💜', '🌺'];
+        const el = document.createElement('span');
+        el.className = 'petal';
+        el.textContent = syms[Math.floor(Math.random() * syms.length)];
+        el.style.left = Math.random() * 100 + '%';
+        el.style.fontSize = (16 + Math.random() * 28) + 'px';
+        el.style.animationDuration = '4s';
+        decor.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+      }, 200);
+      toast('🌸 Chuva de pétalas ativada!');
+    } else {
+      clearInterval(petalInterval);
+      toast('🌸 Chuva de pétalas desativada');
+    }
+  });
 
   /* ============ INIT ============ */
   fillLetter();

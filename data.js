@@ -7,6 +7,11 @@ const SURPRISE_DATA = {
   // Data de início do relacionamento (AAAA-MM-DD)
   dataInicio: "2024-01-01",
 
+  // Minha localização (para o mapa de distância)
+  minhaLat: -8.0476,           // Latitude (Recife-PE = -8.0476)
+  minhaLon: -34.8770,          // Longitude (Recife-PE = -34.8770)
+  minhaLocal: "Recife-PE",     // Nome da cidade
+
   // Capítulo 1 — Carta
   carta: `Meu amor,
 

@@ -346,3 +346,31 @@ body {
 
 /* ===== Lottie no loading ===== */
 .lottie-heart { width: 80px; height: 80px; margin-bottom: 0.5rem; }
+
+/* ===== Mapa ===== */
+.map-container { position: relative; width: 100%; margin-top: 1rem; border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,215,0,0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.map-marker-ela, .map-marker-eu { font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(236,72,153,0.6)); }
+.map-info { margin-top: 1rem; text-align: center; }
+.map-distance { font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--gold); text-shadow: 0 0 15px rgba(255,215,0,0.3); }
+.map-time { font-size: 0.9rem; color: #e9d5ff; }
+
+/* ===== Tema claro (alternativa) ===== */
+body.light-theme {
+  background: linear-gradient(135deg, #fafafa, #fff0f5, #f0f8ff);
+  background-image: none;
+  color: #262626;
+}
+body.light-theme .glass {
+  background: rgba(255,255,255,0.6);
+  border-image: linear-gradient(135deg, rgba(236,72,153,0.4), rgba(168,85,247,0.3)) 1;
+  box-shadow: 0 20px 60px rgba(236,72,153,0.15);
+}
+body.light-theme .title { background: linear-gradient(120deg, #ec4899, #FFD700, #a855f7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+body.light-theme .letter-body { color: #4a4a4a; }
+body.light-theme .contract-text { color: #4a4a4a; }
+body.light-theme .subtitle { color: #666; }
+body.light-theme .eyebrow { color: #ec4899; }
+body.light-theme .hint { color: #888; }
+body.light-theme .iam { color: #a855f7; }
+body.light-theme .timeline-event { color: #555; }
+body.light-theme .divider::before, body.light-theme .divider::after { background: linear-gradient(90deg, transparent, rgba(236,72,153,0.4), transparent); }

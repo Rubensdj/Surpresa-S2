@@ -1,48 +1,51 @@
-/* =====================================================================
-   data.js — PERSONALIZE AQUI 💖
-   Tudo o que aparece na surpresa pode ser editado neste único arquivo.
-   Não precisa mexer no resto do código.
-   ===================================================================== */
-
+/* data.js — PERSONALIZE TUDO AQUI 💖 */
 const SURPRISE_DATA = {
   // Nomes
-  nomeRecipiente: "Nome da Pessoa",      // Nome dela
-  nomeRemetente: "Seu Nome",              // Seu nome
+  nomeRecipiente: "Nome da Pessoa",
+  nomeRemetente: "Seu Nome",
 
-  // Data de início do relacionamento (para o contador de dias)
-  dataInicio: "2024-01-01",               // Formato: AAAA-MM-DD
+  // Data de início do relacionamento (AAAA-MM-DD)
+  dataInicio: "2024-01-01",
 
   // Capítulo 1 — Carta
-  carta: `Desde o momento em que você chegou na minha vida, tudo ganhou mais cor,
-mais brilho e mais sentido.
-Cada risada sua, cada mensagem, cada instante ao seu lado é um presente
-que eu guardo no coração.
+  carta: `Meu amor,
 
-Esta página é um pedacinho de tudo o que você significa para mim.
-Que ela te faça sorrir, do mesmo jeito que você me faz sorrir todos os dias.
+Desde o momento em que você chegou na minha vida, tudo ganhou mais cor, mais brilho e mais sentido. Cada risada sua, cada mensagem, cada instante ao seu lado é um presente que eu guardo no coração.
+
+Esta página é um pedacinho de tudo o que você significa para mim. Que ela te faça sorrir, do mesmo jeito que você me faz sorrir todos os dias.
 
 Obrigado por ser você. 💖`,
 
-  // Capítulo 2 — Datas especiais (adicione ou remova linhas)
-  // formato: { data: "dia", evento: "o que aconteceu" }
+  // Capítulo 2 — Datas especiais (timeline visual)
   datas: [
-    { data: "01/01", evento: "O dia em que nossos caminhos se cruzaram" },
-    { data: "14/02", evento: "Nosso primeiro cafuné" },
-    { data: "15/06", evento: "A risada mais bonita que já ouvi" },
+    { data: "01/01/2024", evento: "O dia em que nossos caminhos se cruzaram" },
+    { data: "14/02/2024", evento: "Nosso primeiro Dia dos Namorados juntos" },
+    { data: "15/06/2024", evento: "A risada mais bonita que já ouvi" },
+    { data: "25/12/2024", evento: "Nosso primeiro Natal juntos" },
   ],
 
-  // Capítulo 3 — Fotos
-  // Nomes de arquivos dentro da pasta "photos/" (ex: foto1.jpg, foto2.png)
+  // Capítulo 3 — Fotos (nomes de arquivos na pasta photos/)
   fotos: [],
 
-  // Capítulo 4 — Vídeos do YouTube (cole o ID do vídeo aqui)
-  // Como achar o ID: na URL https://youtu.be/XXXX ou /watch?v=XXXX
-  // Exemplo: "dQw4w9WgXcQ"
+  // Capítulo 4 — Vídeos do YouTube (IDs)
   videos: ["9QWa5QMWPJo"],
 
   // Capítulo Final — Contrato
-  contratoTexto: `Eu, {RECIPIENTE}, livre e espontaneamente, aceito assinar este
-contrato eterno de amor e cumplicidade com quem preparou esta surpresa.
-Prometo rir com você, cuidar de você, e caminhar ao seu lado em todos
-os capítulos da nossa história.`,
+  contratoTexto: `Eu, {RECIPIENTE}, livre e espontaneamente, aceito assinar este contrato eterno de amor e cumplicidade com {REMETENTE}.
+
+Prometo rir com você, cuidar de você, e caminhar ao seu lado em todos os capítulos da nossa história.`,
+
+  // Mensagem secreta (botão Surpresa)
+  mensagemSecreta: "Você é a melhor coisa que já aconteceu na minha vida. Eu te escolho, hoje e sempre. 🌹",
+
+  // Playlist de músicas de fundo (IDs do YouTube, tocados como áudio)
+  playlistMusicas: [],
+
+  // Tema (cores personalizáveis)
+  tema: {
+    primaria: "#ec4899",
+    secundaria: "#a855f7",
+    destaque: "#67e8f9",
+    dourado: "#FFD700",
+  },
 };

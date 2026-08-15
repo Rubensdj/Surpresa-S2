@@ -2,14 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>Para Você 💖 — Uma Surpresa Especial</title>
   <meta name="description" content="Uma surpresa pensada para você — carta, momentos, datas e um pedido especial." />
 
   <!-- Fontes premium -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <!-- Three.js para fundo 3D -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -20,54 +20,72 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Fundo 3D (corações/flores flutuantes) -->
+
+  <!-- ===== Tela de Loading ===== -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-heart">💖</div>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+    <p class="loading-text">Preparando algo especial...</p>
+  </div>
+
+  <!-- Fundo 3D -->
   <canvas id="three-canvas"></canvas>
 
-  <!-- Decoração flutuante (pétalas de coração em CSS) -->
+  <!-- Decoração flutuante -->
   <div id="decor" aria-hidden="true"></div>
 
-  <!-- Confete container -->
+  <!-- Confete -->
   <div id="confetti" aria-hidden="true"></div>
 
-  <!-- Barra de progresso entre capítulos -->
+  <!-- Selos / Badges -->
+  <div id="badges" class="badges hidden"></div>
+
+  <!-- Barra de progresso -->
   <div id="progress-bar" class="progress-bar hidden"><div id="progress-fill" class="progress-fill"></div></div>
 
-  <!-- Musica toggle -->
-  <button id="music-toggle" class="music-toggle" title="Ligar/desligar música">🎵</button>
+  <!-- Controles -->
+  <div id="controls" class="controls hidden">
+    <button id="music-toggle" class="ctrl-btn" title="Música">🎵</button>
+    <button id="fullscreen-toggle" class="ctrl-btn" title="Tela cheia">⛶</button>
+  </div>
 
-  <!-- ===== Abertura ===== -->
-  <section id="chapter-welcome" class="chapter active">
-    <div class="glass card-center">
-      <div class="heart-orbit">💖</div>
-      <h1 class="title">Para Você</h1>
-      <p class="subtitle">Eu preparei algo especial. Toque e descubra.</p>
-      <button id="btn-start" class="btn-primary">Abrir a Surpresa ✨</button>
+  <!-- ===== Capítulo 0: Envelope ===== -->
+  <section id="chapter-envelope" class="chapter active">
+    <div class="envelope-wrapper">
+      <div class="envelope" id="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-body">
+          <p class="envelope-text">Para Você</p>
+          <p class="envelope-sub">Toque para abrir</p>
+        </div>
+        <div class="envelope-seal">💖</div>
+      </div>
     </div>
   </section>
 
   <!-- ===== Carta ===== -->
   <section id="chapter-letter" class="chapter">
-    <div class="glass card">
+    <div class="glass card paper-card">
       <p class="eyebrow">Capítulo 1 · Uma Carta</p>
       <h2 class="title small">Minha carta para você</h2>
       <div class="letter-body" id="letter-body">
         <p id="letter-text"></p>
       </div>
-      <div class="divider"><span>Agora</span></div>
+      <div class="divider"><span>✦</span></div>
     </div>
   </section>
 
-  <!-- ===== Datas Especiais ===== -->
+  <!-- ===== Datas (Timeline) ===== -->
   <section id="chapter-dates" class="chapter">
     <div class="glass card">
-      <p class="eyebrow">Capítulo 2 · Datas Especiais</p>
-      <h2 class="title small">Nossos momentos no calendário</h2>
+      <p class="eyebrow">Capítulo 2 · Nossa História</p>
+      <h2 class="title small">Momentos que ficaram</h2>
       <div id="timer-counter" class="timer-counter">
         <span class="timer-label">Estamos juntos há</span>
         <span id="timer-days" class="timer-number">0</span>
         <span class="timer-unit">dias</span>
       </div>
-      <ul id="dates-list" class="dates-list"></ul>
+      <div class="timeline" id="timeline"></div>
     </div>
   </section>
 
@@ -75,7 +93,7 @@
   <section id="chapter-photos" class="chapter">
     <div class="glass card">
       <p class="eyebrow">Capítulo 3 · Nossas Memórias</p>
-      <h2 class="title small">Momentos que eu quero lembrar para sempre</h2>
+      <h2 class="title small">Momentos para sempre</h2>
       <p class="hint">Coloque suas fotos na pasta <code>photos/</code> e elas aparecem aqui.</p>
       <div id="photos-grid" class="photos-grid"></div>
     </div>
@@ -106,9 +124,14 @@
         <div class="sign-actions">
           <button id="clear-signature" class="btn-ghost">Limpar</button>
           <button id="btn-confirm" class="btn-primary">Eu Aceito 💖</button>
+          <button id="btn-surprise" class="btn-gold">Surpresa 🎁</button>
+        </div>
+        <div class="sign-actions">
           <button id="btn-download-pdf" class="btn-ghost">Baixar Comprovante PDF 📄</button>
         </div>
       </div>
+
+      <div id="secret-message" class="secret-message hidden"></div>
     </div>
   </section>
 
@@ -120,15 +143,15 @@
 
   <!-- ===== Navegação ===== -->
   <nav id="chapter-nav" class="chapter-nav hidden">
-    <button class="nav-btn active" data-target="chapter-welcome">💌</button>
-    <button class="nav-btn" data-target="chapter-letter">✉️</button>
+    <button class="nav-btn active" data-target="chapter-envelope">✉️</button>
+    <button class="nav-btn" data-target="chapter-letter">📝</button>
     <button class="nav-btn" data-target="chapter-dates">📅</button>
     <button class="nav-btn" data-target="chapter-photos">📷</button>
     <button class="nav-btn" data-target="chapter-video">🎬</button>
     <button class="nav-btn" data-target="chapter-contract">💍</button>
   </nav>
 
-  <div id="message-toast" class="toast hidden">💖 Obrigado por aceitar!</div>
+  <div id="message-toast" class="toast hidden"></div>
 
   <script src="data.js"></script>
   <script src="script.js"></script>

@@ -6,16 +6,25 @@
   <title>Para Você 💖 — Uma Surpresa Especial</title>
   <meta name="description" content="Uma surpresa pensada para você — carta, momentos, datas e um pedido especial." />
 
+  <!-- Open Graph (social sharing) -->
+  <meta property="og:title" content="Para Você 💖" />
+  <meta property="og:description" content="Uma surpresa pensada para você — carta, momentos, datas e um pedido especial." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://rubensdj.github.io/Surpresa-S2/" />
+
+  <!-- Favicon SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>" />
+
   <!-- Fontes premium -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <!-- Three.js para fundo 3D -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- jsPDF para gerar o comprovante em PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -57,6 +66,7 @@
         <div class="envelope-body">
           <p class="envelope-text">Para Você</p>
           <p class="envelope-sub">Toque para abrir</p>
+          <div class="envelope-arrow">👇</div>
         </div>
         <div class="envelope-seal">💖</div>
       </div>
@@ -142,13 +152,13 @@
   </div>
 
   <!-- ===== Navegação ===== -->
-  <nav id="chapter-nav" class="chapter-nav hidden">
-    <button class="nav-btn active" data-target="chapter-envelope">✉️</button>
-    <button class="nav-btn" data-target="chapter-letter">📝</button>
-    <button class="nav-btn" data-target="chapter-dates">📅</button>
-    <button class="nav-btn" data-target="chapter-photos">📷</button>
-    <button class="nav-btn" data-target="chapter-video">🎬</button>
-    <button class="nav-btn" data-target="chapter-contract">💍</button>
+  <nav id="chapter-nav" class="chapter-nav hidden" aria-label="Navegação entre capítulos">
+    <button class="nav-btn active" data-target="chapter-envelope" aria-label="Envelope">✉️</button>
+    <button class="nav-btn" data-target="chapter-letter" aria-label="Carta">📝</button>
+    <button class="nav-btn" data-target="chapter-dates" aria-label="Datas especiais">📅</button>
+    <button class="nav-btn" data-target="chapter-photos" aria-label="Fotos">📷</button>
+    <button class="nav-btn" data-target="chapter-video" aria-label="Vídeos">🎬</button>
+    <button class="nav-btn" data-target="chapter-contract" aria-label="Contrato">💍</button>
   </nav>
 
   <div id="message-toast" class="toast hidden"></div>

@@ -172,6 +172,8 @@ body {
 }
 .envelope-text { font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--gold); }
 .envelope-sub { font-size: 0.8rem; color: #e9d5ff; margin-top: 0.3rem; animation: pulse 2s ease infinite; }
+.envelope-arrow { font-size: 1.5rem; margin-top: 0.5rem; animation: arrowBounce 1.5s ease infinite; }
+@keyframes arrowBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
 @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
 .envelope-flap {
   position: absolute; top: 0; left: 0; width: 0; height: 0;
@@ -308,4 +310,20 @@ body {
   .ctrl-btn { width: 42px; height: 42px; font-size: 1.1rem; }
   .controls { top: 0.7rem; right: 0.7rem; }
   .badges { max-width: 140px; }
+}
+
+/* ===== Acessibilidade: reduzir animações ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Foco visível (acessibilidade) ===== */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 4px;
 }

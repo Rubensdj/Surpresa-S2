@@ -26,12 +26,29 @@
   <!-- jsPDF para gerar o comprovante em PDF -->
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+  <!-- GSAP: animações cinematográficas -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- canvas-confetti: confete real com física -->
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- A-Frame + AR.js: Realidade Aumentada -->
+  <script defer src="https://aframe.io/releases/1.5.0/aframe.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script defer src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- YouTube IFrame API: player de música real -->
+  <script defer src="https://www.youtube.com/iframe_api" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- Lottie: animação vetorial -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <!-- ===== Tela de Loading ===== -->
   <div id="loading-screen" class="loading-screen">
+    <div id="lottie-heart" class="lottie-heart"></div>
     <div class="loading-heart">💖</div>
     <div class="loading-bar"><div class="loading-fill"></div></div>
     <p class="loading-text">Preparando algo especial...</p>
@@ -120,6 +137,30 @@
     </div>
   </section>
 
+  <!-- ===== Realidade Aumentada ===== -->
+  <section id="chapter-ar" class="chapter">
+    <div class="glass card">
+      <p class="eyebrow">Capítulo 5 · Realidade Aumentada</p>
+      <h2 class="title small">Corações no mundo real</h2>
+      <p class="hint">Aponte a câmera do seu celular e veja corações 3D flutuando ao seu redor.</p>
+      <button id="btn-ar-start" class="btn-gold">Ativar RA 🔮</button>
+      <div id="ar-scene" class="ar-scene hidden">
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono;" renderer="logarithmicDepthBuffer: true; precision: high;" vr-mode-ui="enabled: false">
+          <a-assets></a-assets>
+          <a-marker preset="hiro">
+            <a-entity geometry="primitive: heart; buffer: true;" position="0 0.5 0" scale="1 1 1" rotation="0 0 0"
+              material="color: #ec4899; metalness: 0.4; roughness: 0.2; transparent: true; opacity: 0.85;">
+              <a-animation attribute="rotation" to="0 360 0" dur="5000" repeat="indefinite" easing="linear"></a-animation>
+              <a-animation attribute="scale" from="0.8 0.8 0.8" to="1.2 1.2 1.2" dur="1500" repeat="indefinite" direction="alternate" easing="ease-in-out"></a-animation>
+            </a-entity>
+          </a-marker>
+          <a-entity camera></a-entity>
+        </a-scene>
+      </div>
+      <p class="hint">Dica: imprima o marcador Hiro ou aponte para uma imagem que o AR.js reconheça.</p>
+    </div>
+  </section>
+
   <!-- ===== Pedido / Contrato ===== -->
   <section id="chapter-contract" class="chapter">
     <div class="glass card">
@@ -137,8 +178,10 @@
           <button id="btn-surprise" class="btn-gold">Surpresa 🎁</button>
         </div>
         <div class="sign-actions">
+          <button id="btn-voice" class="btn-gold btn-voice">Falar sua resposta 🎤</button>
           <button id="btn-download-pdf" class="btn-ghost">Baixar Comprovante PDF 📄</button>
         </div>
+        <p id="voice-status" class="hint voice-status hidden"></p>
       </div>
 
       <div id="secret-message" class="secret-message hidden"></div>
@@ -158,12 +201,25 @@
     <button class="nav-btn" data-target="chapter-dates" aria-label="Datas especiais">📅</button>
     <button class="nav-btn" data-target="chapter-photos" aria-label="Fotos">📷</button>
     <button class="nav-btn" data-target="chapter-video" aria-label="Vídeos">🎬</button>
+    <button class="nav-btn" data-target="chapter-ar" aria-label="Realidade Aumentada">🔮</button>
     <button class="nav-btn" data-target="chapter-contract" aria-label="Contrato">💍</button>
   </nav>
+
+  <!-- Player invisível do YouTube -->
+  <div id="yt-player-wrapper" class="yt-player-wrapper hidden">
+    <div id="yt-player"></div>
+  </div>
 
   <div id="message-toast" class="toast hidden"></div>
 
   <script src="data.js"></script>
   <script src="script.js"></script>
+
+  <!-- Service Worker (PWA offline) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function(e) { console.warn('SW failed:', e); });
+    }
+  </script>
 </body>
 </html>

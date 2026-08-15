@@ -3,7 +3,7 @@
   'use strict';
   const DATA = window.SURPRISE_DATA || {};
   const TEMA = DATA.tema || {};
-  const chapters = ['chapter-envelope', 'chapter-letter', 'chapter-dates', 'chapter-photos', 'chapter-video', 'chapter-contract'];
+  const chapters = ['chapter-envelope', 'chapter-letter', 'chapter-dates', 'chapter-photos', 'chapter-video', 'chapter-ar', 'chapter-contract'];
 
   /* ============ 0. LOADING SCREEN ============ */
   function hideLoading() {
@@ -97,20 +97,34 @@
   }
   spawnDecor();
 
-  /* ============ 3. CONFETE ============ */
+  /* ============ 3. CONFETE (canvas-confetti library + fallback) ============ */
   function launchConfetti() {
-    const c = document.getElementById('confetti');
-    const syms = ['💖', '💕', '💗', '💓', '💞', '🌹', '✨', '🎉', '🌟'];
-    for (let i = 0; i < 50; i++) {
-      const el = document.createElement('span');
-      el.className = 'confetti-heart';
-      el.textContent = syms[Math.floor(Math.random() * syms.length)];
-      el.style.left = Math.random() * 100 + '%';
-      el.style.fontSize = (16 + Math.random() * 32) + 'px';
-      el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
-      el.style.animationDelay = (Math.random() * 0.5) + 's';
-      c.appendChild(el);
-      setTimeout(() => el.remove(), 6000);
+    if (window.confetti) {
+      // Confete real com física
+      const defaults = { spread: 360, ticks: 100, gravity: 0.4, decay: 0.94, startVelocity: 30, shapes: ['star', 'circle'], colors: ['#ec4899', '#a855f7', '#67e8f9', '#FFD700', '#ff80bf'] };
+      function shoot() {
+        confetti({ ...defaults, particleCount: 40, scalar: 1.2 });
+        confetti({ ...defaults, particleCount: 20, scalar: 0.8 });
+        confetti({ particleCount: 30, spread: 100, origin: { y: 0.6 }, colors: ['#ec4899', '#FFD700', '#a855f7'] });
+      }
+      shoot();
+      setTimeout(shoot, 200);
+      setTimeout(shoot, 400);
+    } else {
+      // Fallback: confete de emoji
+      const c = document.getElementById('confetti');
+      const syms = ['💖', '💕', '💗', '💓', '💞', '🌹', '✨', '🎉', '🌟'];
+      for (let i = 0; i < 50; i++) {
+        const el = document.createElement('span');
+        el.className = 'confetti-heart';
+        el.textContent = syms[Math.floor(Math.random() * syms.length)];
+        el.style.left = Math.random() * 100 + '%';
+        el.style.fontSize = (16 + Math.random() * 32) + 'px';
+        el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+        el.style.animationDelay = (Math.random() * 0.5) + 's';
+        c.appendChild(el);
+        setTimeout(() => el.remove(), 6000);
+      }
     }
   }
 
@@ -254,7 +268,7 @@
   }
 
   function addBadge(idx) {
-    const labels = ['✉️ Envelope', '📝 Carta', '📅 História', '📷 Memórias', '🎬 Vídeo', '💍 Contrato'];
+    const labels = ['✉️ Envelope', '📝 Carta', '📅 História', '📷 Memórias', '🎬 Vídeo', '🔮 RA', '💍 Contrato'];
     const b = document.createElement('span');
     b.className = 'badge'; b.textContent = labels[idx] || '✨';
     badgesEl.appendChild(b);
@@ -265,6 +279,26 @@
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.target === id));
     updateProgress(id);
+    initGSAP(id);
+  }
+
+  /* ============ GSAP: Animações cinematográficas ============ */
+  function initGSAP(id) {
+    if (!window.gsap) return;
+    const ch = document.getElementById(id);
+    if (!ch) return;
+    const card = ch.querySelector('.glass');
+    if (card) {
+      gsap.fromTo(card, { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' });
+    }
+    const items = ch.querySelectorAll('.timeline-item, .photos-grid img, .video-embed iframe');
+    if (items.length) {
+      gsap.fromTo(items, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out' });
+    }
+    const title = ch.querySelector('.title');
+    if (title) {
+      gsap.fromTo(title, { opacity: 0, y: -20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'back.out(1.7)' });
+    }
   }
 
   // Envelope clique
@@ -435,6 +469,126 @@
     t.textContent = msg; t.classList.remove('hidden');
     setTimeout(() => t.classList.add('hidden'), 5000);
   }
+
+  /* ============ 17. YOUTUBE IFRAME API (player real) ============ */
+  let ytPlayer = null, ytReady = false, ytIndex = 0;
+  window.onYouTubeIframeAPIReady = function() {
+    const playlist = DATA.playlistMusicas || [];
+    if (!playlist.length) return;
+    ytPlayer = new YT.Player('yt-player', {
+      height: '0', width: '0',
+      videoId: playlist[0],
+      playerVars: { autoplay: 0, loop: 1, playlist: playlist.join(','), controls: 0 },
+      events: {
+        onReady: () => { ytReady = true; },
+        onStateChange: (e) => {
+          if (e.data === YT.PlayerState.ENDED && ytIndex < playlist.length - 1) {
+            ytIndex++; ytPlayer.loadVideoById(playlist[ytIndex]);
+          }
+        }
+      }
+    });
+  };
+
+  // Sobrescrever toggleMusic para também controlar o YouTube
+  const origToggleMusic = toggleMusic;
+  toggleMusic = function() {
+    if (ytReady && ytPlayer) {
+      const state = ytPlayer.getPlayerState();
+      if (state === 1) { ytPlayer.pauseVideo(); }
+      else { ytPlayer.playVideo(); }
+    }
+    origToggleMusic();
+  };
+  document.getElementById('music-toggle').removeEventListener('click', origToggleMusic);
+  document.getElementById('music-toggle').addEventListener('click', toggleMusic);
+
+  /* ============ 18. WEB SPEECH API (reconhecimento de voz) ============ */
+  function initVoice() {
+    if (!DATA.vozAtivada) return;
+    const btn = document.getElementById('btn-voice');
+    const status = document.getElementById('voice-status');
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      btn.style.opacity = '0.5'; btn.disabled = true; btn.textContent = 'Voz não suportada 😔';
+      return;
+    }
+    let recognition = null;
+    let listening = false;
+
+    btn.addEventListener('click', () => {
+      if (listening) {
+        if (recognition) recognition.stop();
+        listening = false;
+        btn.textContent = 'Falar sua resposta 🎤';
+        btn.classList.remove('listening');
+        return;
+      }
+      recognition = new SR();
+      recognition.lang = 'pt-BR';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 3;
+
+      status.textContent = 'Ouvindo... diga "sim" ou "aceito" 💝';
+      status.classList.remove('hidden');
+      btn.classList.add('listening');
+      listening = true;
+
+      recognition.onresult = (e) => {
+        const transcript = e.results[0][0].transcript.toLowerCase().trim();
+        status.textContent = 'Você disse: "' + transcript + '"';
+        if (transcript.includes('sim') || transcript.includes('aceito') || transcript.includes('aceito sim') || transcript.includes('sim aceito')) {
+          status.textContent = '💖 Ela disse SIM!';
+          document.getElementById('btn-confirm').click();
+        } else if (transcript.includes('nao') || transcript.includes('não')) {
+          status.textContent = '😅 Vamos tentar de novo...';
+        }
+      };
+
+      recognition.onerror = (e) => {
+        status.textContent = 'Erro no microfone: ' + e.error;
+        status.classList.remove('hidden');
+      };
+
+      recognition.onend = () => {
+        listening = false;
+        btn.textContent = 'Falar sua resposta 🎤';
+        btn.classList.remove('listening');
+      };
+
+      recognition.start();
+    });
+  }
+  initVoice();
+
+  /* ============ 19. AR (A-Frame) ============ */
+  document.getElementById('btn-ar-start')?.addEventListener('click', function() {
+    const scene = document.getElementById('ar-scene');
+    scene.classList.remove('hidden');
+    this.style.display = 'none';
+    toast('🔮 Aponte a câmera para o marcador Hiro!');
+  });
+
+  /* ============ 20. LOTTIE (loading) ============ */
+  function initLottie() {
+    if (!window.lottie) return;
+    const el = document.getElementById('lottie-heart');
+    if (!el) return;
+    // JSON inline de coração batendo (simplificado)
+    const heartData = {
+      v: '5.7.4', fr: 30, w: 100, h: 100, ip: 0, op: 30, nm: 'Heart', layers: [{
+        ty: 4, nm: 'Heart', sr: 1, ks: { o: { a: 0, k: 100 }, s: { a: 1, k: [
+          { t: 0, s: [80, 80, 100], h: 0 }, { t: 15, s: [120, 120, 100], h: 0 }, { t: 30, s: [80, 80, 100], h: 0 }
+        ] } }, shapes: [{
+          ty: 'gr', it: [{ ty: 'sh', ks: { a: 0, k: { i: [[0,-8],[8,0],[0,8],[-8,0]], o: [[0,8],[-8,0],[0,-8],[8,0]], v: [[0,-15],[-15,0],[0,15],[15,0]], c: true } } },
+          { ty: 'fl', c: { a: 0, k: [0.925, 0.282, 0.6, 1] } }, { ty: 'tr' }]
+        }]
+      }]
+    };
+    try { lottie.loadAnimation({ container: el, renderer: 'svg', loop: true, autoplay: true, animationData: heartData }); }
+    catch (e) {}
+  }
+  initLottie();
 
   /* ============ INIT ============ */
   fillLetter();

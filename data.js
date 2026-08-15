@@ -35,11 +35,17 @@ Obrigado por ser você. 💖`,
 
 Prometo rir com você, cuidar de você, e caminhar ao seu lado em todos os capítulos da nossa história.`,
 
+  // Playlist de músicas de fundo (IDs do YouTube, tocados via YouTube IFrame API)
+  playlistMusicas: ["9QWa5QMWPJo"],
+
   // Mensagem secreta (botão Surpresa)
   mensagemSecreta: "Você é a melhor coisa que já aconteceu na minha vida. Eu te escolho, hoje e sempre. 🌹",
 
-  // Playlist de músicas de fundo (IDs do YouTube, tocados como áudio)
-  playlistMusicas: [],
+  // Habilita Realidade Aumentada
+  arCoracoes: true,
+
+  // Habilita reconhecimento de voz
+  vozAtivada: true,
 
   // Tema (cores personalizáveis)
   tema: {

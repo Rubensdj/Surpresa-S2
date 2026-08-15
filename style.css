@@ -327,3 +327,22 @@ body {
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* ===== AR ===== */
+.ar-scene { position: relative; width: 100%; height: 300px; margin-top: 1rem; border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,215,0,0.3); }
+.ar-scene a-scene { width: 100% !important; height: 300px !important; }
+
+/* ===== Botão de voz ===== */
+.btn-voice { position: relative; }
+.btn-voice.listening { animation: voicePulse 1s ease-in-out infinite; background: linear-gradient(120deg, #ec4899, #FFD700); }
+@keyframes voicePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,0.6); }
+  50% { box-shadow: 0 0 0 15px rgba(236,72,153,0); }
+}
+.voice-status { font-family: 'Dancing Script', cursive; font-size: 1.1rem; color: var(--gold); text-align: center; margin-top: 0.4rem; }
+
+/* ===== YouTube player invisível ===== */
+.yt-player-wrapper { position: fixed; bottom: -9999px; right: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ===== Lottie no loading ===== */
+.lottie-heart { width: 80px; height: 80px; margin-bottom: 0.5rem; }
